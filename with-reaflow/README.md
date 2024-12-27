@@ -1,35 +1,30 @@
 # Reaflow Path Visualization
 
-## Core Components
+## Implementation Overview
 
-### Canvas
+### Core Files
 
-The main visualization component that:
+- `src/nodes/index.ts`: Defines the path data structure and node mapping logic
 
-- Renders nodes and edges in a directed graph
-- Handles automatic layout and positioning
+  - Maintains path definitions as arrays of connected entities (accounts, groups, roles, resources)
+  - Handles deduplication of nodes that appear in multiple paths
+  - Maps raw path data into Reaflow-compatible NodeData format
 
-### Node Components
+- `src/edges/index.ts`: Manages edge creation and relationships
 
-Built-in node types for different visualization needs:
+  - Converts path sequences into edge connections
+  - Creates unique edge IDs based on source and target nodes
+  - Flattens multi-path relationships into a single edge collection
 
-- `BaseNode`: Foundation node with basic styling and behavior
-- `CustomNode`: Extensible node component for custom implementations
-- Supports labels, icons, and custom content rendering
-
-### Edge Components
-
-Edge visualization options:
-
-- `BaseEdge`: Standard directed edge with arrow
-- Supports custom line styles, colors, and arrow markers
-- Handles edge routing and path calculation
+- `src/App.tsx`: Main visualization component
+  - Configures the Reaflow Canvas with nodes and edges
+  - Sets up right-to-left directional flow
+  - Enables zooming and auto-fit functionality
 
 ## Layout System
 
-Handle by reawflow...
-The layout engine:
+Handled by Reaflow's built-in layout engine:
 
-- Automatically positions nodes using a hierarchical layout algorithm
+- Automatically positions nodes using a hierarchical layout
 - Supports both vertical and horizontal flow directions
 - Handles complex nested relationships
