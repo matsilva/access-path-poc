@@ -36,9 +36,3 @@ The `simpleAutoFlow` function positions nodes by:
 - Reusing y-coordinates for shared nodes based on their first appearance in any path
   - When a node appears in multiple paths, it will always use the y-coordinate from its first occurrence
   - This helps maintain visual consistency and reduces crossing edges
-
-## Example Path Types
-
-1. Direct assignments: Account → Role → Resource
-2. Group assignments: Account → Group → Role → Resource
-3. Nested groups: Account → Group → Group → Role → Resource

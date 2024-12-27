@@ -1,0 +1,16 @@
+{
+  "configurations": {
+    "msilva-access-path-reaflow": {
+      "appLocation": "./",
+      "outputLocation": "build",
+      "start": {
+        "outputLocation": "build"
+      },
+      "deploy": {
+        "outputLocation": "build"
+      },
+      "appName": "msilva-access-path-reaflow",
+      "resourceGroup": "msilva-poc-rg"
+    }
+  }
+}
