@@ -12,6 +12,7 @@ export function createEdgeFromNodes(fromNode: Node, toNode: Node): Edge {
     id: `${fromNode.id}-${toNode.id}`,
     source: fromNode.id,
     target: toNode.id,
+    // type: 'smoothstep',
     animated: false,
   };
 }

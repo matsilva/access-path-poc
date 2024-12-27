@@ -1,34 +1,44 @@
-![](https://github.com/xyflow/web/blob/main/assets/codesandbox-header-ts.png?raw=true)
+# React Flow Path Visualization
 
-# React Flow TypeScript starter
+## Core Components
 
-We've put together this template to serve as a starting point for folks
-interested in React Flow. You can use this sandbox to experiment with the library
-or share with us a bug report or issue.
+### App.tsx
 
-**TypeScript not your thing?** We also have a vanilla JavaScript starter template,
-just for you!
+The main component that assembles the flow chart using React Flow. It:
 
-## Getting up and running
+- Initializes nodes and edges from the path data
+- Handles node/edge state management
+- Renders the flow chart with background, minimap, and controls
 
-You can fork and edit this sandbox in your browser. If you want to work offline or are
-looking for a template for real app development, check out our
-[Vite React Flow template](https://github.com/xyflow/vite-react-flow-template/tree/main).
+### src/edges/index.ts
 
-## Things to try:
+Handles edge creation and management:
 
-- Create a new custom node inside `src/nodes/` (don't forget to export it from `src/nodes/index.ts`).
-- Change how things look by [overriding some of the built-in classes](https://reactflow.dev/learn/customization/theming#overriding-built-in-classes).
-- Add a layouting library to [position your nodes automatically](https://reactflow.dev/learn/layouting/layouting)
+- Defines the `PathNode` type structure
+- Contains logic for creating edges between nodes
+- Provides `createEdgesFromPath` to generate edges from a path array
 
-## Resources
+### src/nodes/index.ts
 
-Links:
+Manages nodes and their layout:
 
-- [React Flow - Docs](https://reactflow.dev)
-- [React Flow - Discord](https://discord.com/invite/Bqt6xrs)
+- Defines the path data structure (account → group → role → resource)
+- Provides `simpleAutoFlow` for automatic node positioning
+- Contains `mapPathToNode` to transform path data into React Flow nodes
+- Handles shared nodes across multiple paths
 
-Learn:
+## Layout Logic
 
-- [React Flow – Custom Nodes](https://reactflow.dev/learn/customization/custom-nodes)
-- [React Flow – Layouting](https://reactflow.dev/learn/layouting/layouting)
+The `simpleAutoFlow` function positions nodes by:
+
+- Spacing nodes horizontally based on their index in the path (using `horizontalGap`, default 200px)
+- Vertically separating different paths (using `verticalGap`, default 150px)
+- Reusing y-coordinates for shared nodes based on their first appearance in any path
+  - When a node appears in multiple paths, it will always use the y-coordinate from its first occurrence
+  - This helps maintain visual consistency and reduces crossing edges
+
+## Example Path Types
+
+1. Direct assignments: Account → Role → Resource
+2. Group assignments: Account → Group → Role → Resource
+3. Nested groups: Account → Group → Group → Role → Resource

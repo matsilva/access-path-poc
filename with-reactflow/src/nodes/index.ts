@@ -40,6 +40,11 @@ export const paths = [
       type: 'role',
     },
     {
+      id: '4',
+      name: 'SaaS Apps User',
+      type: 'role',
+    },
+    {
       id: '3',
       name: 'Zoom',
       type: 'resource',
@@ -53,6 +58,11 @@ export const paths = [
       type: 'account',
     },
     {
+      id: '6',
+      name: 'All Employees',
+      type: 'group',
+    },
+    {
       id: '7',
       name: 'Engineering',
       type: 'group',
@@ -64,28 +74,31 @@ export const paths = [
     },
     {
       id: '4',
-      name: 'Admin Role',
+      name: 'SaaS Apps User',
       type: 'role',
     },
     {
-      id: '5',
-      name: 'GitHub',
+      id: '3',
+      name: 'Zoom',
       type: 'resource',
     },
   ],
 ];
 
-export function simpleAutoFlow(index: number, pathIndex: number) {
-  const verticalGap = 150;
-  const horizontalGap = 200;
-
+export function simpleAutoFlow(
+  index: number,
+  pathIndex: number,
+  paths: Array<Array<{ id: string }>>,
+  options = { verticalGap: 150, horizontalGap: 200 }
+) {
   const currentNodeId = paths[pathIndex][index].id;
 
-  const isSharedNode = paths.some((path, otherPathIndex) => pathIndex !== otherPathIndex && path.some((node) => node.id === currentNodeId));
+  // Find the first path index where this node appears
+  const firstPathIndex = paths.findIndex((path) => path.some((node) => node.id === currentNodeId));
 
   return {
-    x: index * horizontalGap,
-    y: isSharedNode ? 0 : pathIndex * verticalGap,
+    x: index * options.horizontalGap,
+    y: firstPathIndex === pathIndex ? pathIndex * options.verticalGap : firstPathIndex * options.verticalGap,
   };
 }
 
@@ -93,7 +106,7 @@ export function mapPathToNode(pathItem: PathNode, index: number, array: PathNode
   return {
     id: pathItem.id,
     type: index === 0 ? 'input' : index === array.length - 1 ? 'output' : undefined,
-    position: simpleAutoFlow(index, pathIndex),
+    position: simpleAutoFlow(index, pathIndex, paths),
     data: { label: pathItem.name },
     sourcePosition: 'right',
     targetPosition: 'left',
