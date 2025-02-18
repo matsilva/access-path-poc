@@ -9,7 +9,7 @@
       "deploy": {
         "outputLocation": "build"
       },
-      "appName": "msilva-access-path-reaflow",
+      "appName": "msilva-poc-reaflow",
       "resourceGroup": "msilva-poc-rg"
     }
   }

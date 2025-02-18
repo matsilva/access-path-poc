@@ -9,7 +9,7 @@
       "deploy": {
         "outputLocation": "build"
       },
-      "appName": "msilva-poc",
+      "appName": "msilva-poc-reactflow",
       "resourceGroup": "msilva-poc-rg"
     }
   }
