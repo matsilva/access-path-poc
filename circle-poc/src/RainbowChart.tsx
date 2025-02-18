@@ -47,40 +47,42 @@ const renderActiveShape = (props: {
   percent: number;
   value: number;
 }) => {
-  console.log(props);
   const fill = fillFromSeverity(props.payload.severity);
   const RADIAN = Math.PI / 180;
-  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, payload, percent, value } = props;
+  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, payload, percent } = props;
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
-  const sx = cx + (outerRadius + 10) * cos;
-  const sy = cy + (outerRadius + 10) * sin;
-  const mx = cx + (outerRadius + 30) * cos;
-  const my = cy + (outerRadius + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
+  // Position the popover
+  const popoverX = cx + innerRadius * cos;
+  const popoverY = cy + innerRadius * sin;
+
+  const xOffset = cos >= 0 ? 10 : -10;
 
   return (
     <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-        {payload.name}
-      </text>
       <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={outerRadius + 6}
-        outerRadius={outerRadius + 10}
-        fill={fill}
+
+      {/* popove rect */}
+      <rect
+        x={popoverX - (cos >= 0 ? 10 : 120)}
+        y={popoverY - 25}
+        width={120}
+        height={60}
+        rx={4}
+        fill="white"
+        stroke={fill}
+        strokeWidth={2}
       />
-      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
-      <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`PV ${value}`}</text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`(Rate ${(percent * 100).toFixed(2)}%)`}
+
+      {/* Severity text */}
+      <text x={popoverX + xOffset} y={popoverY} textAnchor={textAnchor} fill={fill} fontWeight="bold">
+        {payload.severity.toUpperCase()}
+      </text>
+
+      {/* Percentage text */}
+      <text x={popoverX + xOffset} y={popoverY + 20} textAnchor={textAnchor} fill="#666">
+        {`${(percent * 100).toFixed(1)}%`}
       </text>
     </g>
   );
