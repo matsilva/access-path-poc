@@ -4,6 +4,7 @@ import { insightData, transformInsightData, transformInsightDataByStatus } from 
 import { SEVERITY_COLORS, getStatusFill, isSeverity } from './constants/colors';
 import { ActiveShape } from './components/ActiveShape';
 import { InsightDataPoint } from './types/chart';
+import { SEVERITY_TO_SHORTHAND } from './constants/severity';
 
 const data = transformInsightData(insightData);
 const dataByStatus = transformInsightDataByStatus(insightData) as InsightDataPoint[];
@@ -93,15 +94,27 @@ export default function RainbowChart() {
             >
               <div
                 style={{
-                  backgroundColor: getStatusFill(data),
-                  color: 'white',
-                  padding: '4px 8px',
                   borderRadius: '4px',
                   marginBottom: '8px',
-                  display: 'inline-block',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'start',
                 }}
               >
-                {data.severity}
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    backgroundColor: getStatusFill(data),
+                    marginRight: '8px',
+                  }}
+                >
+                  {SEVERITY_TO_SHORTHAND[data.severity as keyof typeof SEVERITY_TO_SHORTHAND]}
+                </span>
+                <span style={{ textTransform: 'capitalize' }}>{data.severity}</span>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
