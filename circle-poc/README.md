@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# Circle POC - Data Visualization
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A proof of concept for visualizing hierarchical data using a multi-layered circular chart built with React, TypeScript, and Recharts.
 
-Currently, two official plugins are available:
+## Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# Start development server
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Core Components
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### RainbowChart (`src/RainbowChart.tsx`)
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+The main visualization component that renders a multi-layered pie chart showing severity and status distribution of issues. Features:
+
+### Components
+
+#### InsightTooltip (`src/components/InsightTooltip.tsx`)
+
+A custom tooltip component that displays detailed information when hovering over chart segments
+
+#### ActiveShape (`src/components/ActiveShape.tsx`)
+
+Handles the active/hover state visualization for chart segments.
+
+### Data Layer (`src/data.ts`)
+
+Includes dummy data and two main transformation functions:
+
+1. `transformInsightData`: Transforms raw insight data into severity-based aggregates for the outer ring
+2. `transformInsightDataByStatus`: Creates status-based breakdowns per severity level for inner rings and tooltips
+
+## Data Structure
+
+```typescript
+interface InsightData {
+  results: InsightResult[];
+  averageResolutionTimeInMillisecondsBySeverity: Record<string, number>;
+}
 ```
+
+Each `InsightResult` contains severity, rule info, status counts, and resolution metrics.
+
+## Recharts Documentation References
+
+The following Recharts components are used in this project:
+
+- [PieChart](https://recharts.org/en-US/api/PieChart) - The container component for pie charts
+- [Pie](https://recharts.org/en-US/api/Pie) - The core pie chart component used for each layer
+- [Cell](https://recharts.org/en-US/api/Cell) - Used for individual segment styling
+- [Tooltip](https://recharts.org/en-US/api/Tooltip) - Base component for custom tooltips
