@@ -1,107 +1,31 @@
 import { useCallback, useState } from 'react';
-import { PieChart, Pie, Sector, Cell } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { insightData, transformInsightData, transformInsightDataByStatus } from './data';
+import { SEVERITY_COLORS, getStatusFill, isSeverity } from './constants/colors';
+import { ActiveShape } from './components/ActiveShape';
+import { InsightDataPoint } from './types/chart';
 
 const data = transformInsightData(insightData);
-const dataByStatus = transformInsightDataByStatus(insightData);
+const dataByStatus = transformInsightDataByStatus(insightData) as InsightDataPoint[];
 
-const fillFromSeverityStatus = (severity: string, status: string) => {
-  const key = `${severity}_${status}`;
-  switch (key) {
-    case 'critical_open':
-      return '#E73E51';
-    case 'high_open':
-      return '#E97A0A';
-    case 'medium_open':
-      return '#F7BD0033';
-    case 'low_open':
-      return '#0DB15F';
-    default:
-      return 'none';
-  }
-};
-
-const fillFromSeverity = (severity: string) => {
-  switch (severity) {
-    case 'critical':
-      return '#E73E51';
-    case 'high':
-      return '#E97A0A';
-    case 'medium':
-      return '#F7BD0033';
-    case 'low':
-      return '#0DB15F';
-  }
-};
-
-const renderActiveShape = (props: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
-  payload: { name: string; severity: string };
-  percent: number;
-  value: number;
-}) => {
-  const fill = fillFromSeverity(props.payload.severity);
-  const RADIAN = Math.PI / 180;
-  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, payload, percent } = props;
-  const sin = Math.sin(-RADIAN * midAngle);
-  const cos = Math.cos(-RADIAN * midAngle);
-  const textAnchor = cos >= 0 ? 'start' : 'end';
-  // Position the popover
-  const popoverX = cx + innerRadius * cos;
-  const popoverY = cy + innerRadius * sin;
-
-  const xOffset = cos >= 0 ? 10 : -10;
-
-  return (
-    <g>
-      <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
-
-      {/* popove rect */}
-      <rect
-        x={popoverX - (cos >= 0 ? 10 : 120)}
-        y={popoverY - 25}
-        width={120}
-        height={60}
-        rx={4}
-        fill="white"
-        stroke={fill}
-        strokeWidth={2}
-      />
-
-      {/* Severity text */}
-      <text x={popoverX + xOffset} y={popoverY} textAnchor={textAnchor} fill={fill} fontWeight="bold">
-        {payload.severity.toUpperCase()}
-      </text>
-
-      {/* Percentage text */}
-      <text x={popoverX + xOffset} y={popoverY + 20} textAnchor={textAnchor} fill="#666">
-        {`${(percent * 100).toFixed(1)}%`}
-      </text>
-    </g>
-  );
-};
-
-export default function App() {
+/**
+ * RainbowChart displays insight data in a multi-layered pie chart
+ * showing severity and status distribution of issues
+ */
+export default function RainbowChart() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const onPieEnter = useCallback(
-    (_, index: number) => {
-      setActiveIndex(index);
-    },
-    [setActiveIndex]
-  );
+
+  const onPieEnter = useCallback((_: unknown, index: number) => {
+    setActiveIndex(index);
+  }, []);
 
   return (
     <PieChart width={1200} height={900}>
-      {/* this is for shading */}
+      {/* Shading layer */}
       <Pie
         activeIndex={activeIndex}
+        //@ts-expect-error - This is fine
+        activeShape={ActiveShape}
         startAngle={210}
         endAngle={-30}
         data={dataByStatus}
@@ -113,14 +37,12 @@ export default function App() {
         onMouseEnter={onPieEnter}
       >
         {dataByStatus.map((entry, index) => (
-          <Cell key={`cell-${index}`} opacity={0.2} fill={fillFromSeverityStatus(entry.severity, entry.status)} />
+          <Cell key={`cell-${index}`} opacity={0.2} fill={getStatusFill(entry)} />
         ))}
       </Pie>
-      {/* this is by severity */}
+
+      {/* Severity layer */}
       <Pie
-        activeIndex={activeIndex}
-        // @ts-expect-error - boo
-        activeShape={renderActiveShape}
         startAngle={210}
         endAngle={-30}
         data={data}
@@ -129,17 +51,15 @@ export default function App() {
         innerRadius={500}
         outerRadius={520}
         cornerRadius={10}
-        // fill="#8884d8"
         dataKey="value"
-        onMouseEnter={onPieEnter}
       >
         {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={fillFromSeverity(entry.severity)} />
+          <Cell key={`cell-${index}`} fill={isSeverity(entry.severity) ? SEVERITY_COLORS[entry.severity] : 'none'} />
         ))}
       </Pie>
-      {/* this is for severity by status */}
+
+      {/* Status by severity layer */}
       <Pie
-        activeIndex={activeIndex}
         startAngle={210}
         endAngle={-30}
         data={dataByStatus}
@@ -147,15 +67,89 @@ export default function App() {
         cy={600}
         innerRadius={400}
         outerRadius={415}
-        // fill="#8884d8"
         dataKey="value"
         cornerRadius={10}
-        onMouseEnter={onPieEnter}
       >
         {dataByStatus.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={fillFromSeverity(entry.severity)} />
+          <Cell key={`cell-${index}`} fill={SEVERITY_COLORS[entry.severity]} />
         ))}
       </Pie>
+
+      <Tooltip
+        content={({ active, payload }) => {
+          if (!active || !payload || !payload.length) return null;
+
+          const data = payload[0].payload;
+          return (
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '12px',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: '#DC3545',
+                  color: 'white',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  marginBottom: '8px',
+                  display: 'inline-block',
+                }}
+              >
+                {data.severity}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <div>Open</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <strong>{data.open || 56}</strong>
+                    <span style={{ color: '#666' }}>{data.openPercentage || '20.2%'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div>Pending</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <strong>{data.pending || 12}</strong>
+                    <span style={{ color: '#666' }}>{data.pendingPercentage || '5.2%'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div>Resolved</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <strong>{data.resolved || 39}</strong>
+                    <span style={{ color: '#666' }}>{data.resolvedPercentage || '75%'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div>Exception</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <strong>{data.exception || 2}</strong>
+                    <span style={{ color: '#666' }}>{data.exceptionPercentage || '0.5%'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  marginTop: '12px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid #eee',
+                }}
+              >
+                <div>Avg Resolution Time</div>
+                <strong>12 DAYS</strong>
+              </div>
+            </div>
+          );
+        }}
+      />
     </PieChart>
   );
 }

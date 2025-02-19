@@ -39,13 +39,30 @@ export const transformInsightDataByStatus = (data: any) => {
     return acc;
   }, {});
 
+  // Calculate totals per severity for percentages
+  const severityTotals = data.results.reduce((acc: Record<string, number>, item: any) => {
+    if (!acc[item.severity]) {
+      acc[item.severity] = Object.values(item.totalByStatus).reduce((sum: number, count: number) => sum + Number(count), 0);
+    }
+    return acc;
+  }, {});
+
   return Object.entries(severityMap).map(([key, count]) => {
     const [severity, status] = key.split('-');
+    const total = severityTotals[severity];
+
     return {
       name: status.toLocaleUpperCase(),
       status,
       severity,
       value: count,
+      total,
+      percentage: `${((count / total) * 100).toFixed(1)}%`,
+      avgResolutionTime: Math.round(
+        data.averageResolutionTimeInMillisecondsBySeverity[severity]
+          ? data.averageResolutionTimeInMillisecondsBySeverity[severity] / (1000 * 60 * 60 * 24)
+          : 12
+      ),
     };
   });
 };
