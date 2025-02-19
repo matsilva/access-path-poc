@@ -119,34 +119,34 @@ export default function RainbowChart() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <div>Open</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Open</div>
+                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
                     <strong>{data.open || 56}</strong>
-                    <span style={{ color: '#666' }}>{data.openPercentage || '20.2%'}</span>
+                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.openPercentage || '20.2%'}</span>
                   </div>
                 </div>
 
                 <div>
-                  <div>Pending</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Pending</div>
+                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
                     <strong>{data.pending || 12}</strong>
-                    <span style={{ color: '#666' }}>{data.pendingPercentage || '5.2%'}</span>
+                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.pendingPercentage || '5.2%'}</span>
                   </div>
                 </div>
 
                 <div>
-                  <div>Resolved</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Resolved</div>
+                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
                     <strong>{data.resolved || 39}</strong>
-                    <span style={{ color: '#666' }}>{data.resolvedPercentage || '75%'}</span>
+                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.resolvedPercentage || '75%'}</span>
                   </div>
                 </div>
 
                 <div>
-                  <div>Exception</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Exception</div>
+                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
                     <strong>{data.exception || 2}</strong>
-                    <span style={{ color: '#666' }}>{data.exceptionPercentage || '0.5%'}</span>
+                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.exceptionPercentage || '0.5%'}</span>
                   </div>
                 </div>
               </div>
