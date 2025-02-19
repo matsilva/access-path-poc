@@ -1,0 +1,16 @@
+{
+  "configurations": {
+    "msilva-insight-overview-bar-chart": {
+      "appLocation": "./",
+      "outputLocation": "dist",
+      "start": {
+        "outputLocation": "dist"
+      },
+      "deploy": {
+        "outputLocation": "dist"
+      },
+      "appName": "msilva-insight-overview-bar-chart",
+      "resourceGroup": "msilva-poc-rg"
+    }
+  }
+}
