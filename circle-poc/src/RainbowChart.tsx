@@ -4,7 +4,7 @@ import { insightData, transformInsightData, transformInsightDataByStatus } from 
 import { SEVERITY_COLORS, getStatusFill, isSeverity } from './constants/colors';
 import { ActiveShape } from './components/ActiveShape';
 import { InsightDataPoint } from './types/chart';
-import { SEVERITY_TO_SHORTHAND } from './constants/severity';
+import { InsightTooltip } from './components/InsightTooltip';
 
 const data = transformInsightData(insightData);
 const dataByStatus = transformInsightDataByStatus(insightData) as InsightDataPoint[];
@@ -78,93 +78,7 @@ export default function RainbowChart() {
         ))}
       </Pie>
 
-      <Tooltip
-        content={({ active, payload }) => {
-          if (!active || !payload || !payload.length) return null;
-
-          const data = payload[0].payload;
-          return (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '12px',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-              }}
-            >
-              <div
-                style={{
-                  borderRadius: '4px',
-                  marginBottom: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'start',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    backgroundColor: getStatusFill(data),
-                    marginRight: '8px',
-                  }}
-                >
-                  {SEVERITY_TO_SHORTHAND[data.severity as keyof typeof SEVERITY_TO_SHORTHAND]}
-                </span>
-                <span style={{ textTransform: 'capitalize' }}>{data.severity}</span>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Open</div>
-                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-                    <strong>{data.open || 56}</strong>
-                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.openPercentage || '20.2%'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Pending</div>
-                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-                    <strong>{data.pending || 12}</strong>
-                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.pendingPercentage || '5.2%'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Resolved</div>
-                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-                    <strong>{data.resolved || 39}</strong>
-                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.resolvedPercentage || '75%'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontSize: '10px', textAlign: 'left' }}>Exception</div>
-                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-                    <strong>{data.exception || 2}</strong>
-                    <span style={{ color: '#666', fontSize: '10px', marginLeft: '4px' }}>{data.exceptionPercentage || '0.5%'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  marginTop: '12px',
-                  paddingTop: '12px',
-                  borderTop: '1px solid #eee',
-                }}
-              >
-                <div>Avg Resolution Time</div>
-                <strong>12 DAYS</strong>
-              </div>
-            </div>
-          );
-        }}
-      />
+      <Tooltip content={InsightTooltip} />
     </PieChart>
   );
 }

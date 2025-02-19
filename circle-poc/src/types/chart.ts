@@ -5,6 +5,14 @@ export interface InsightDataPoint {
   severity: keyof typeof SEVERITY_COLORS;
   value: number;
   status?: 'open' | 'closed';
+  open: number;
+  pending: number;
+  resolved: number;
+  exception: number;
+  openPercentage: string;
+  pendingPercentage: string;
+  resolvedPercentage: string;
+  exceptionPercentage: string;
 }
 
 export interface ActiveShapeProps {
