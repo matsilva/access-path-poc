@@ -1,14 +1,42 @@
-const data = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-  { name: 'Group C', value: 300 },
-  { name: 'Group D', value: 200 },
-];
+interface InsightResult {
+  severity: string;
+  ruleId: string;
+  ruleName: string;
+  totalByStatus: {
+    open: number;
+    pending: number;
+    deferred: number;
+    exception: number;
+    resolved: number;
+  };
+}
+
+interface InsightData {
+  results: InsightResult[];
+  averageResolutionTimeInMillisecondsBySeverity: Record<string, number>;
+}
+
+interface TransformedInsightData {
+  name: string;
+  severity: string;
+  value: number;
+}
+
+interface TransformedStatusData {
+  name: string;
+  status: string;
+  severity: string;
+  value: number;
+  total: number;
+  percentage: string;
+  avgResolutionTime: number;
+}
+
 // create a transform function that will transform the insightData a data array where name is the severity and value is the count of results by severity
 // so critical should be [{name: 'critical', value: 2}]
 
-export const transformInsightData = (data: any) => {
-  const severityMap = data.results.reduce((acc: Record<string, number>, item: any) => {
+export const transformInsightData = (data: InsightData): TransformedInsightData[] => {
+  const severityMap = data.results.reduce((acc: Record<string, number>, item: InsightResult) => {
     const total = Object.values(item.totalByStatus).reduce((sum: number, count: number) => sum + count, 0);
     if (acc[item.severity]) acc[item.severity] += total;
     else acc[item.severity] = total;
@@ -30,8 +58,8 @@ export const transformInsightData = (data: any) => {
 //   color: '#E73E51',
 // }
 
-export const transformInsightDataByStatus = (data: any) => {
-  const severityMap = data.results.reduce((acc: Record<string, number>, item: any) => {
+export const transformInsightDataByStatus = (data: InsightData): TransformedStatusData[] => {
+  const severityMap = data.results.reduce((acc: Record<string, number>, item: InsightResult) => {
     Object.entries(item.totalByStatus).forEach(([status, count]) => {
       const key = `${item.severity}-${status}`;
       acc[key] = (acc[key] || 0) + Number(count);
@@ -40,7 +68,7 @@ export const transformInsightDataByStatus = (data: any) => {
   }, {});
 
   // Calculate totals per severity for percentages
-  const severityTotals = data.results.reduce((acc: Record<string, number>, item: any) => {
+  const severityTotals = data.results.reduce((acc: Record<string, number>, item: InsightResult) => {
     if (!acc[item.severity]) {
       acc[item.severity] = Object.values(item.totalByStatus).reduce((sum: number, count: number) => sum + Number(count), 0);
     }
@@ -67,7 +95,7 @@ export const transformInsightDataByStatus = (data: any) => {
   });
 };
 
-export const insightData = {
+export const insightData: InsightData = {
   results: [
     {
       severity: 'critical',

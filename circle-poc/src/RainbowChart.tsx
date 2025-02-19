@@ -51,6 +51,7 @@ export default function RainbowChart() {
         innerRadius={500}
         outerRadius={520}
         cornerRadius={10}
+        stroke="none"
         dataKey="value"
       >
         {data.map((entry, index) => (
@@ -69,6 +70,7 @@ export default function RainbowChart() {
         outerRadius={415}
         dataKey="value"
         cornerRadius={10}
+        stroke="none"
       >
         {dataByStatus.map((entry, index) => (
           <Cell key={`cell-${index}`} fill={SEVERITY_COLORS[entry.severity]} />
@@ -91,7 +93,7 @@ export default function RainbowChart() {
             >
               <div
                 style={{
-                  backgroundColor: '#DC3545',
+                  backgroundColor: getStatusFill(data),
                   color: 'white',
                   padding: '4px 8px',
                   borderRadius: '4px',
